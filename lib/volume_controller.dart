@@ -52,8 +52,8 @@ class VolumeController {
   }
 
   /// This method set the system volume between 0.0 to 1.0.
-  void setVolume(double volume, {bool? showSystemUI}) {
-    _methodChannel.invokeMethod('setVolume',
+  Future setVolume(double volume, {bool? showSystemUI}) async {
+     await _methodChannel.invokeMethod('setVolume',
         {"volume": volume, "showSystemUI": showSystemUI ?? this.showSystemUI});
   }
 

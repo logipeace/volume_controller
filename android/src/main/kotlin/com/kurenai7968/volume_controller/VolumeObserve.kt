@@ -23,15 +23,15 @@ class VolumeObserver(private val context:Context){
         if (volume < 0) {
             volumePercentage = 0.0
         }
-        var maxVolume:Int = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        var maxVolume:Int = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)
         _volume = (round(volumePercentage * maxVolume)).toInt()
 
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, _volume, if (showSystemUI) FLAG_SHOW_UI else 0)
+        audioManager.setStreamVolume(AudioManager.STREAM_RING, _volume, if (showSystemUI) FLAG_SHOW_UI else 0)
     }
 
     fun getVolume():Double {
-        var currentVolume:Int = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        var maxVolume:Int = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        var currentVolume:Int = audioManager.getStreamVolume(AudioManager.STREAM_RING)
+        var maxVolume:Int = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)
         return round((currentVolume / maxVolume.toDouble()) * 10000) / 10000
     }
 }
@@ -63,8 +63,8 @@ class VolumeListener(private val context: Context): EventChannel.StreamHandler {
     }
 
     private fun volume():Double {
-        var currentVolume:Int = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        var maxVolume:Int = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        var currentVolume:Int = audioManager.getStreamVolume(AudioManager.STREAM_RING)
+        var maxVolume:Int = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)
         return round((currentVolume / maxVolume.toDouble()) * 10000) / 10000
     }
 }
@@ -76,8 +76,8 @@ class VolumeBroadcastReceiver(private val events: EventChannel.EventSink?): Broa
     private var maxVolume:Int = 0
     override fun onReceive(context: Context, intent: Intent?) {
         audioManager= context!!.getSystemService(AUDIO_SERVICE) as AudioManager;
-        currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING)
+        maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)
         volumePercentage = round((currentVolume / maxVolume.toDouble()) * 10000) / 10000
         events?.success(volumePercentage)
     }
