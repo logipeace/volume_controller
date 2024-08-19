@@ -9,12 +9,16 @@ import android.media.AudioManager
 import android.media.AudioManager.FLAG_SHOW_UI
 import io.flutter.plugin.common.EventChannel
 import kotlin.math.round
-
+import android.app.NotificationManager
+import android.os.Build
 
 class VolumeObserver(private val context:Context){
     private var audioManager: AudioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
 
     fun setVolumeByPercentage(volume:Double, showSystemUI:Boolean) {
+        if(isDoNotDisturbEnabled()) {
+            return
+        }
         var volumePercentage:Double = volume
         var _volume:Int = 0
         if (volume > 1) {
@@ -30,9 +34,21 @@ class VolumeObserver(private val context:Context){
     }
 
     fun getVolume():Double {
+        if(isDoNotDisturbEnabled()) {
+            return 0.0
+        }
         var currentVolume:Int = audioManager.getStreamVolume(AudioManager.STREAM_RING)
         var maxVolume:Int = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)
         return round((currentVolume / maxVolume.toDouble()) * 10000) / 10000
+    }
+
+    private fun isDoNotDisturbEnabled(): Boolean {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            notificationManager.currentInterruptionFilter == NotificationManager.INTERRUPTION_FILTER_NONE
+        } else {
+            false
+        }
     }
 }
 
